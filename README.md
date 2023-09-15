@@ -16,3 +16,20 @@ $ npx create-next-app@latest  my-app
 ✔ Would you like to customize the default import alias? … No
 ```
 
+
+## deploy
+
+```shell
+# at ./infrastructure
+$ npm install
+$ cdk ls
+zenn-example-cognito
+
+$ cdk deploy zenn-example-cognito
+```
+
+```shell
+# at ./frontend/zenn
+$ npm install
+$ npm run dev
+```
