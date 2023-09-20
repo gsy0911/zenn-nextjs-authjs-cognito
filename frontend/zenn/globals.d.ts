@@ -1,5 +1,8 @@
 declare namespace NodeJS {
   interface ProcessEnv {
+    // common
+    readonly BACKEND_API_ENDPOINT: string;
+    readonly ACCOUNT_ID: string;
     // next-auth.js
     readonly NEXTAUTH_SECRET: string;
     readonly NEXTAUTH_URL: string;
@@ -9,5 +12,7 @@ declare namespace NodeJS {
     readonly COGNITO_CLIENT_ID: string;
     readonly COGNITO_CLIENT_SECRET: string;
     readonly COGNITO_ISSUER: string;
+    // cognito-id-pool
+    readonly COGNITO_IDENTITY_POOL_ID: string;
   }
 }

@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "zenn-example"
+version = "0.1.0"
+description = ""
+authors = [""]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+pydantic = "^2.0.2"
+mangum = "^0.17.0"
+cryptography = "^41.0.3"
+s3fs = "^2023.6.0"
+pyjwt = "^2.8.0"
+fastapi = "^0.103.1"
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
+gunicorn = "^21.2.0"
+pandas = "^2.1.0"
+
+[tool.poetry.group.dev.dependencies]
+jupyterlab = "^4.0.5"
+isort = "^5.12.0"
+mypy = "^1.5.1"
+black = "^23.9.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.black]
+target-version = ['py38', 'py39']
+line-length = 120
+exclude = """
+/(
+    .git
+    | .github
+    | .mypy_cache
+    | .pytest_cache
+    | .venv
+    | cdk.out
+    | data
+    | dockerfiles
+    | node_modules
+    | docs
+    | htmlcov
+    | frontend
+    | notebook
+/)
+"""
+
+[tool.isort]
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+profile = "black"
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true

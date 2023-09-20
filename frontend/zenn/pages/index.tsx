@@ -1,4 +1,5 @@
 import { SignInPage } from "@/components/pages/signin";
+import { UserInfo } from "@/components/pages/userInfo";
 import { LoadingOverlay, Button } from "@mantine/core";
 import { useSession, signOut } from "next-auth/react";
 
@@ -20,8 +21,7 @@ export default function Home() {
   }
   return (
     <>
-      {JSON.stringify(session)}
-      <Button onClick={() => signOut()}>サインアウト</Button>
+      <UserInfo />
     </>
   );
 }

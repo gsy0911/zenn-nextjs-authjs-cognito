@@ -1,0 +1,42 @@
+version: '3'
+
+includes:
+  back:
+    taskfile: https://raw.githubusercontent.com/gsy0911/task/main/taskfile.docker.yml
+    vars:
+      DOCKERFILE_PATH: ./backend/Dockerfile
+      IMAGE: zenn-example
+      CONTAINER: zenn-backend-container
+      AWS_ACCOUNT:
+        sh: echo $(aws sts get-caller-identity --profile {{.profile | default "default"}} | jq -r .Account 2>/dev/null);
+      REGION: ap-northeast-1
+      LAMBDA_NAME: zenn-example-apigw-endpoint
+      tag: latest
+
+tasks:
+  default:
+    cmds:
+      - task -l --sort none
+    silent: true
+
+  format:
+    desc: format with black
+    cmds:
+      - isort {{.MODULE_NAME}}
+      - isort test
+      - black .
+    preconditions:
+      - type python > /dev/null 2>&1
+
+  deploy-backend:
+    desc: deploy backend; e.g. $ deploy-backend
+    cmds:
+      - task login
+      - task back:build
+      - task back:push
+      - task back:update-docker-lambda
+
+  login:
+    desc: login to ECR
+    cmds:
+      - aws ecr get-login-password --region {{.REGION}} | docker login --username AWS --password-stdin {{.AWS_ACCOUNT}}.dkr.ecr.{{.REGION}}.amazonaws.com
