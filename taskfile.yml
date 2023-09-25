@@ -1,5 +1,11 @@
 version: '3'
 
+vars:
+  AWS_ACCOUNT:
+    sh: echo $(aws sts get-caller-identity --profile {{.profile | default "default"}} | jq -r .Account 2>/dev/null);
+  REGION: ap-northeast-1
+
+
 includes:
   back:
     taskfile: https://raw.githubusercontent.com/gsy0911/task/main/taskfile.docker.yml
@@ -10,8 +16,8 @@ includes:
       AWS_ACCOUNT:
         sh: echo $(aws sts get-caller-identity --profile {{.profile | default "default"}} | jq -r .Account 2>/dev/null);
       REGION: ap-northeast-1
-      LAMBDA_NAME: zenn-example-apigw-endpoint
-      tag: latest
+      LAMBDA_NAME: zenn-example-lambda-endpoint
+      tag: backend
 
 tasks:
   default:

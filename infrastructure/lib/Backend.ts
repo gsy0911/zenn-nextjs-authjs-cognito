@@ -24,11 +24,17 @@ export interface IBackend {
     route53DomainName: string;
     route53RecordName: string;
   };
+  cognito: {
+    userPoolId: `ap-northeast-${string}`;
+    identityPoolId: `ap-northeast-1:${string}`;
+  };
+  s3Bucket: string;
 }
 
 export class Backend extends Stack {
   constructor(scope: App, id: string, params: IBackend, props?: StackProps) {
     super(scope, id, props);
+    const accountId = Stack.of(this).account;
 
     /** */
     const role = new aws_iam.Role(this, "lambda-role", {
@@ -39,6 +45,11 @@ export class Backend extends Stack {
           this,
           "lambdaRoleCwFullAccess",
           "arn:aws:iam::aws:policy/CloudWatchFullAccess",
+        ),
+        aws_iam.ManagedPolicy.fromManagedPolicyArn(
+          this,
+          "lambdaRoleCognitoPowerAccess",
+          "arn:aws:iam::aws:policy/AmazonCognitoPowerUser",
         ),
       ],
     });
@@ -57,13 +68,17 @@ export class Backend extends Stack {
       {
         functionName: `${prefix}-lambda-endpoint`,
         code: aws_lambda.DockerImageCode.fromEcr(ecrRepositoryBackend, {
-          tagOrDigest: "latest",
+          tagOrDigest: "backend",
         }),
         timeout: Duration.seconds(30),
         memorySize: 2048,
         role,
         environment: {
           TZ: "Asia/Tokyo",
+          ACCOUNT_ID: accountId,
+          USER_POOL_ID: params.cognito.userPoolId,
+          IDENTITY_POOL_ID: params.cognito.identityPoolId,
+          S3_BUCKET: params.s3Bucket,
         },
       },
     );
@@ -95,6 +110,10 @@ export class Backend extends Stack {
     });
     const userRoot = api.root.addResource("user");
     userRoot.addMethod("GET", integrationDefault, {
+      authorizationType: aws_apigateway.AuthorizationType.IAM,
+    });
+    const readFileRoot = api.root.addResource("read-file");
+    readFileRoot.addMethod("GET", integrationDefault, {
       authorizationType: aws_apigateway.AuthorizationType.IAM,
     });
 

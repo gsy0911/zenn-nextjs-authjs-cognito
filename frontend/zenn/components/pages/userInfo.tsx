@@ -15,35 +15,53 @@ import { useSession, signOut } from "next-auth/react";
 
 export const UserInfo = () => {
   const { data: session } = useSession();
-  const [message, setMessage] = useState<string>("");
+  const [message1, setMessage1] = useState<string>("");
+  const [message2, setMessage2] = useState<string>("");
   if (!session) {
     return <LoadingOverlay visible={true} />;
   }
 
   const onAdminClick = () => {
+    setMessage1("");
     axios({
       url: "/api/v1/admin",
       method: "GET",
       headers: { Authorization: session.user.idToken },
     })
       .then((res) => {
-        setMessage(JSON.stringify(res));
+        setMessage1(JSON.stringify(res));
       })
       .catch((err) => {
-        setMessage(JSON.stringify(err));
+        setMessage1(JSON.stringify(err));
       });
   };
   const onUserClick = () => {
+    setMessage1("");
     axios({
       url: "/api/v1/user",
       method: "GET",
       headers: { Authorization: session.user.idToken },
     })
       .then((res) => {
-        setMessage(JSON.stringify(res));
+        setMessage1(JSON.stringify(res));
       })
       .catch((err) => {
-        setMessage(JSON.stringify(err));
+        setMessage1(JSON.stringify(err));
+      });
+  };
+
+  const onReadFileClick = () => {
+    setMessage2("");
+    axios({
+      url: "/api/v1/read-file",
+      method: "GET",
+      headers: { Authorization: session.user.idToken },
+    })
+      .then((res) => {
+        setMessage2(JSON.stringify(res));
+      })
+      .catch((err) => {
+        setMessage2(JSON.stringify(err));
       });
   };
 
@@ -69,9 +87,15 @@ export const UserInfo = () => {
           サインアウト
         </Button>
         <Space h={"md"} />
+        <Divider
+          label={"authorization-check: API Gateway"}
+          labelPosition={"center"}
+          variant={"dashed"}
+        />
+
         <Group grow position={"center"}>
-          <Button onClick={onAdminClick}>admin</Button>
-          <Button onClick={onUserClick}>user</Button>
+          <Button onClick={onAdminClick}>/admin</Button>
+          <Button onClick={onUserClick}>/user</Button>
         </Group>
         <Space h={"md"} />
         <Divider
@@ -79,7 +103,23 @@ export const UserInfo = () => {
           labelPosition={"center"}
           variant={"dashed"}
         />
-        {message}
+        {message1}
+        <Space h={"md"} />
+        <Divider
+          label={"authorization-check: S3 File Read"}
+          labelPosition={"center"}
+          variant={"dashed"}
+        />
+        <Group grow position={"center"}>
+          <Button onClick={onReadFileClick}>GET /read-file</Button>
+        </Group>
+        <Space h={"md"} />
+        <Divider
+          label={"response"}
+          labelPosition={"center"}
+          variant={"dashed"}
+        />
+        {message2}
       </Paper>
     </Container>
   );

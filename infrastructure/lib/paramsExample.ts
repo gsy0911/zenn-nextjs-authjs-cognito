@@ -1,4 +1,3 @@
-
 import { IBackend } from "./Backend";
 import { ICognitoStack } from "./Cognito";
 
@@ -11,6 +10,7 @@ export const paramsCognito: ICognitoStack = {
     // 最初は空でデプロイ後に取得できる値から設定する。
     idPoolId: "ap-northeast-1:aaaabbbb-cccc-dddd-eeee-ffffgggghhhh",
   },
+  s3Bucket: "your-bucket-name",
 };
 
 export const paramsBackend: IBackend = {
@@ -25,6 +25,11 @@ export const paramsBackend: IBackend = {
     route53RecordName: `api.zenn.your.domain`,
     basePath: "v1",
   },
+  cognito: {
+    userPoolId: "ap-northeast-1_aaaabbbb",
+    identityPoolId: "ap-northeast-1:aaaabbbb-cccc-dddd-eeee-ffffgggghhhh",
+  },
+  s3Bucket: "your-bucket-name",
 };
 
 export const description = "zenn-nextjs-authjs-cognito@v0.1.0";

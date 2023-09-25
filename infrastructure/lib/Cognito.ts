@@ -24,6 +24,7 @@ export interface ICognitoStack {
     apigwRestApiId: string;
     idPoolId: `ap-northeast-1:${string}`;
   };
+  s3Bucket: string;
 }
 
 const adminOnlyApiGwResource = (
@@ -32,6 +33,7 @@ const adminOnlyApiGwResource = (
 ): string[] => {
   return [
     `arn:aws:execute-api:ap-northeast-1:${accountId}:${apigwRestApiId}/v1/GET/admin`,
+    `arn:aws:execute-api:ap-northeast-1:${accountId}:${apigwRestApiId}/v1/GET/read-file`,
   ];
 };
 
@@ -41,6 +43,7 @@ const userOnlyApiGwResource = (
 ): string[] => {
   return [
     `arn:aws:execute-api:ap-northeast-1:${accountId}:${apigwRestApiId}/v1/GET/user`,
+    `arn:aws:execute-api:ap-northeast-1:${accountId}:${apigwRestApiId}/v1/GET/read-file`,
   ];
 };
 
@@ -142,6 +145,20 @@ export class Cognito extends Stack {
               ),
               actions: ["execute-api:Invoke"],
             }),
+            new aws_iam.PolicyStatement({
+              effect: aws_iam.Effect.ALLOW,
+              actions: ["s3:ListBucket"],
+              resources: [`arn:aws:s3:::${params.s3Bucket}`],
+              conditions: { StringLike: { "s3:prefix": ["cognito-test"] } },
+            }),
+            new aws_iam.PolicyStatement({
+              effect: aws_iam.Effect.ALLOW,
+              resources: [
+                `arn:aws:s3:::${params.s3Bucket}/cognito-test/\${cognito-identity.amazonaws.com:sub}`,
+                `arn:aws:s3:::${params.s3Bucket}/cognito-test/\${cognito-identity.amazonaws.com:sub}/*`,
+              ],
+              actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+            }),
           ],
         }),
       },
@@ -160,6 +177,20 @@ export class Cognito extends Stack {
                 params.idPool.apigwRestApiId,
               ),
               actions: ["execute-api:Invoke"],
+            }),
+            new aws_iam.PolicyStatement({
+              effect: aws_iam.Effect.ALLOW,
+              actions: ["s3:ListBucket"],
+              resources: [`arn:aws:s3:::${params.s3Bucket}`],
+              conditions: { StringLike: { "s3:prefix": ["cognito-test"] } },
+            }),
+            new aws_iam.PolicyStatement({
+              effect: aws_iam.Effect.ALLOW,
+              resources: [
+                `arn:aws:s3:::${params.s3Bucket}/cognito-test/\${cognito-identity.amazonaws.com:sub}`,
+                `arn:aws:s3:::${params.s3Bucket}/cognito-test/\${cognito-identity.amazonaws.com:sub}/*`,
+              ],
+              actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
             }),
           ],
         }),

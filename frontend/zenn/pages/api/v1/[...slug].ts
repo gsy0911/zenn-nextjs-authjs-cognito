@@ -11,6 +11,7 @@ import {
 } from "@aws-sdk/client-cognito-identity";
 import { SignatureV4 } from "@aws-sdk/signature-v4";
 import { HttpRequest } from "@aws-sdk/protocol-http";
+import { QueryParameterBag } from "@aws-sdk/types";
 import { Sha256 } from "@aws-crypto/sha256-universal";
 
 const getCredentialsFromIdToken = async (
@@ -40,6 +41,7 @@ const getCredentialsFromIdToken = async (
 const getSignedHeaders = async (
   credentials: GetCredentialsForIdentityCommandOutput,
   apiUrl: URL,
+  query?: QueryParameterBag,
 ) => {
   const signatureV4 = new SignatureV4({
     service: "execute-api",
@@ -60,6 +62,7 @@ const getSignedHeaders = async (
     hostname: apiUrl.hostname,
     method: "GET",
     path: apiUrl.pathname,
+    query,
   });
   const signedRequest = await signatureV4.sign(httpRequest);
   return signedRequest.headers;
@@ -103,12 +106,16 @@ export default async function handler(
   const signedHeaders = await getSignedHeaders(
     credentials,
     new URL(`${process.env.BACKEND_API_ENDPOINT}/v1${fixedUrl.url}`),
+    query as QueryParameterBag,
   );
 
   if (req.method === "GET") {
     const options = {
       method: "GET",
-      headers: signedHeaders,
+      headers: {
+        idToken: req.headers["authorization"] || "",
+        ...signedHeaders,
+      },
       url: fixedUrl.url,
     };
     const result = await BackendApiClient(options)
