@@ -1,6 +1,6 @@
 import { SignInPage } from "@/components/pages/signin";
 import { UserInfo } from "@/components/pages/userInfo";
-import { LoadingOverlay, Button } from "@mantine/core";
+import { LoadingOverlay } from "@mantine/core";
 import { useSession, signOut } from "next-auth/react";
 
 export default function Home() {

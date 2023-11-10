@@ -18,6 +18,18 @@ includes:
       REGION: ap-northeast-1
       LAMBDA_NAME: zenn-example-lambda-endpoint
       tag: backend
+  front:
+    taskfile: https://raw.githubusercontent.com/gsy0911/task/main/taskfile.docker.yml
+    vars:
+      DOCKERFILE_PATH: ./frontend/Dockerfile
+      IMAGE: zenn-example
+      CONTAINER: zenn-frontend-container
+      AWS_ACCOUNT:
+        sh: echo $(aws sts get-caller-identity --profile {{.profile | default "default"}} | jq -r .Account 2>/dev/null);
+      REGION: ap-northeast-1
+      LAMBDA_NAME: zenn-example-frontend-endpoint
+      tag: frontend
+
 
 tasks:
   default:
@@ -41,6 +53,14 @@ tasks:
       - task back:build
       - task back:push
       - task back:update-docker-lambda
+
+  deploy-frontend:
+    desc: deploy backend; e.g. $ deploy-frontend
+    cmds:
+      - task login
+      - task front:build-arm64
+      - task front:push
+      - task front:update-docker-lambda
 
   login:
     desc: login to ECR

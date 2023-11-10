@@ -12,3 +12,11 @@ new lib.Backend(app, `${lib.prefix}-backend`, lib.paramsBackend, {
   env: lib.env,
   description: lib.description,
 });
+new lib.LambdaEdgeStack(app, `${lib.prefix}-lambda-edge`, {
+  env: lib.envUsEast,
+  description: lib.description,
+});
+new lib.Frontend(app, `${lib.prefix}-frontend`, lib.paramsFrontend, {
+  env: lib.env,
+  description: lib.description,
+});
