@@ -1,6 +1,7 @@
 declare namespace NodeJS {
   interface ProcessEnv {
     // common
+    readonly OUTPUT: "standalone" | "export";
     readonly BACKEND_API_ENDPOINT: string;
     readonly ACCOUNT_ID: string;
     // next-auth.js

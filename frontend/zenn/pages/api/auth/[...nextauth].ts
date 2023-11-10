@@ -161,10 +161,9 @@ export const authOptions: AuthOptions = {
       if (url.startsWith("signOut:") && process.env.COGNITO_ENDPOINT) {
         // Sign out from auth provider
         const logoutEndpointUrl = `${process.env.COGNITO_ENDPOINT}/logout`;
-        const campaign = url.split(":")[1];
         const params = new URLSearchParams({
           client_id: process.env.COGNITO_CLIENT_ID,
-          logout_uri: `${process.env.NEXTAUTH_URL}/${campaign}/auth/login`,
+          logout_uri: `${process.env.NEXTAUTH_URL}/`,
         });
         return `${logoutEndpointUrl}?${params.toString()}`;
       }
@@ -210,10 +209,10 @@ export const authOptions: AuthOptions = {
       return refreshAccessToken(token);
     },
   },
-  pages: {
-    signIn: "/auth/signin",
-    signOut: "/auth/signin",
-  },
+  // pages: {
+  //   signIn: "/auth/signin",
+  //   signOut: "/auth/signin",
+  // },
 };
 
 export default NextAuth(authOptions);

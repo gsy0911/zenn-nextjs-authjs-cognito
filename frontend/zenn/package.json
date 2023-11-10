@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build:standalone": "ENV=production OUTPUT=standalone next build",
+    "build:export": "ENV=production OUTPUT=export next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write pages globals.d.ts components common"
@@ -19,7 +20,7 @@
     "@mantine/form": "^6.0.20",
     "@mantine/hooks": "^6.0.20",
     "@mantine/next": "^6.0.20",
-    "@types/node": "20.6.1",
+    "@types/node": "18.18.9",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "axios": "^1.5.0",
