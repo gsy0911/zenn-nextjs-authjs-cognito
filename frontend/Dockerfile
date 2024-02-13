@@ -3,10 +3,10 @@ FROM node:18 AS builder
 
 WORKDIR /app
 
-COPY ./frontend/zenn/package.json ./
-COPY ./frontend/zenn/package-lock.json ./
+COPY ./frontend/zenn-app-router/package.json ./
+COPY ./frontend/zenn-app-router/package-lock.json ./
 RUN npm ci
-COPY ./frontend/zenn ./
+COPY ./frontend/zenn-app-router ./
 RUN npm run build:standalone
 
 # baseステージをもとにrunnerステージを開始
@@ -15,6 +15,7 @@ FROM node:18-slim AS runner
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.7.1 /lambda-adapter /opt/extensions/lambda-adapter
 # この値はDockerなら必須のためここで固定
 ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 WORKDIR /app
 
 # public と .next/static は nextjs の standalone を使う場合に含まれないため、コピーする必要がある

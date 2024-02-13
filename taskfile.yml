@@ -29,6 +29,8 @@ includes:
       REGION: ap-northeast-1
       LAMBDA_NAME: zenn-example-frontend-endpoint
       tag: frontend
+  nextjs:
+    taskfile: ./taskfile.nextjs.yml
 
 
 tasks:

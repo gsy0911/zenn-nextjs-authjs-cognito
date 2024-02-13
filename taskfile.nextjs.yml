@@ -1,0 +1,25 @@
+version: '3'
+
+vars:
+  AWS_ACCOUNT: 990309287027
+  REGION: ap-northeast-1
+  S3_BUCKET_NAME: mdrskn-zenn-example-bucket
+
+tasks:
+  build-export:
+    desc: deploy frontend
+    dir: ./frontend/zenn-app-router
+    cmds:
+      - npm run build:export
+
+  build-standalone:
+    desc: deploy frontend
+    dir: ./frontend/zenn-app-router
+    cmds:
+      - npm run build:standalone
+
+  s3-sync:
+    desc: sync s3
+    dir: ./frontend/zenn-app-router
+    cmds:
+      - aws s3 sync out s3://{{.S3_BUCKET_NAME}}
