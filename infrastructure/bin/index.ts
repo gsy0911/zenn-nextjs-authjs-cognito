@@ -3,22 +3,19 @@ import * as cdk from "aws-cdk-lib";
 import * as lib from "../lib";
 
 const app = new cdk.App();
+const description = "zenn-nextjs-authjs-cognito@v0.5.0";
 
-new lib.Cognito(app, `${lib.prefix}-cognito`, lib.paramsCognito, {
-  env: lib.env,
-  description: lib.description,
-});
 new lib.Backend(app, `${lib.prefix}-backend`, lib.paramsBackend, {
   env: lib.env,
-  description: lib.description,
+  description,
 });
 new lib.LambdaEdgeStack(app, `${lib.prefix}-lambda-edge`, {
   env: lib.envUsEast,
-  description: lib.description,
+  description,
 });
 new lib.Frontend(app, `${lib.prefix}-frontend`, lib.paramsFrontend, {
   env: lib.env,
-  description: lib.description,
+  description,
 });
 new lib.FrontendWildcardDomain(
   app,
@@ -26,6 +23,11 @@ new lib.FrontendWildcardDomain(
   lib.paramsFrontendWildCard,
   {
     env: lib.env,
-    description: lib.description,
+    description,
   },
 );
+
+new lib.AuthStack(app, `${lib.prefix}-auth`, lib.paramsAuth, {
+  env: lib.env,
+  description,
+});

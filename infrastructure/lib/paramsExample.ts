@@ -1,18 +1,5 @@
 import { IBackend } from "./Backend";
-import { ICognitoStack } from "./Cognito";
 import { IFrontendEnvironment } from "./constants";
-
-export const paramsCognito: ICognitoStack = {
-  domainPrefix: "{your.domain.com}",
-  callbackUrls: ["http://localhost:3000"],
-  logoutUrls: ["http://localhost:3000"],
-  idPool: {
-    apigwRestApiId: "aaaabbbbcc",
-    // 最初は空でデプロイ後に取得できる値から設定する。
-    idPoolId: "ap-northeast-1:aaaabbbb-cccc-dddd-eeee-ffffgggghhhh",
-  },
-  s3Bucket: "your-bucket-name",
-};
 
 export const paramsBackend: IBackend = {
   name: "ZennExampleApi",
