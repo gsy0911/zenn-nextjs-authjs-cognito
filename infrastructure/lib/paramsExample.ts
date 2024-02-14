@@ -1,26 +1,6 @@
-import { IBackend } from "./Backend";
-import { IFrontendEnvironment } from "./constants";
+import { IFrontendEnvironment } from "./constructs/common";
 
-export const paramsBackend: IBackend = {
-  name: "ZennExampleApi",
-  ecr: {
-    repositoryArn:
-      "arn:aws:ecr:ap-northeast-1:000011112222:repository/zenn-example",
-  },
-  apigw: {
-    certificate: `arn:aws:acm:us-east-1:000011112222:certificate/aaaabbbb-cccc-dddd-eeee-ffffgggghhhh`,
-    route53DomainName: "your.domain",
-    route53RecordName: `api.zenn.your.domain`,
-    basePath: "v1",
-  },
-  cognito: {
-    userPoolId: "ap-northeast-1_aaaabbbb",
-    identityPoolId: "ap-northeast-1:aaaabbbb-cccc-dddd-eeee-ffffgggghhhh",
-  },
-  s3Bucket: "your-bucket-name",
-};
-
-export const stgFrontendEnvironment: {
+export const frontendEnvironment: {
   [key: string]: string;
 } & IFrontendEnvironment = {
   ACCOUNT_ID: "",
@@ -37,12 +17,7 @@ export const stgFrontendEnvironment: {
   COGNITO_CLIENT_SECRET: "none",
 };
 
-export const description = "zenn-nextjs-authjs-cognito@v0.1.0";
 export const env = {
   account: "000011112222",
   region: "ap-northeast-1",
-};
-export const envUsEast = {
-  account: "000011112222",
-  region: "us-east-1",
 };
