@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --experimental-https",
     "build:standalone": "ENV=production OUTPUT=standalone next build",
     "build:export": "ENV=production OUTPUT=export next build",
     "start": "next start",
@@ -27,7 +27,7 @@
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
     "jwt-decode": "^3.1.2",
-    "next": "13.4.19",
+    "next": "14.1.0",
     "next-auth": "^4.23.1",
     "prettier": "^3.0.3",
     "query-string": "^8.1.0",
