@@ -54,40 +54,30 @@ export class Backend extends Construct {
         ),
       ],
     });
-    const ecrRepositoryBackend = aws_ecr.Repository.fromRepositoryArn(
-      this,
-      "EcrRepository",
-      props.ecr.repositoryArn,
-    );
+    const ecrRepositoryBackend = aws_ecr.Repository.fromRepositoryArn(this, "EcrRepository", props.ecr.repositoryArn);
     /**
      * container image
      * tag: params.environment
      */
-    const lambdaEndpoint = new aws_lambda.DockerImageFunction(
-      this,
-      "LambdaHandler",
-      {
-        functionName: `${servicePrefix}-lambda-endpoint-${environment}`,
-        code: aws_lambda.DockerImageCode.fromEcr(ecrRepositoryBackend, {
-          tagOrDigest: "backend",
-        }),
-        timeout: Duration.seconds(30),
-        memorySize: 1024,
-        role,
-        environment: {
-          TZ: "Asia/Tokyo",
-          ACCOUNT_ID: accountId,
-          USER_POOL_ID: props.cognito.userPoolId,
-          IDENTITY_POOL_ID: props.cognito.identityPoolId,
-          S3_BUCKET: props.s3Bucket,
-        },
+    const lambdaEndpoint = new aws_lambda.DockerImageFunction(this, "LambdaHandler", {
+      functionName: `${servicePrefix}-lambda-endpoint-${environment}`,
+      code: aws_lambda.DockerImageCode.fromEcr(ecrRepositoryBackend, {
+        tagOrDigest: "backend",
+      }),
+      timeout: Duration.seconds(30),
+      memorySize: 1024,
+      role,
+      environment: {
+        TZ: "Asia/Tokyo",
+        ACCOUNT_ID: accountId,
+        USER_POOL_ID: props.cognito.userPoolId,
+        IDENTITY_POOL_ID: props.cognito.identityPoolId,
+        S3_BUCKET: props.s3Bucket,
       },
-    );
+    });
 
     // integrationの定義
-    const integrationDefault = new aws_apigateway.LambdaIntegration(
-      lambdaEndpoint,
-    );
+    const integrationDefault = new aws_apigateway.LambdaIntegration(lambdaEndpoint);
 
     // API Gatewayの定義
     const api = new aws_apigateway.RestApi(this, "Api", {
@@ -119,35 +109,21 @@ export class Backend extends Construct {
     });
 
     // カスタムドメインの設定: apigwそのもののドメイン設定
-    const apigwCustomDomainName = new aws_apigateway.DomainName(
-      this,
-      "CustomDomain",
-      {
-        certificate: acm.Certificate.fromCertificateArn(
-          this,
-          "certificate",
-          props.apigw.certificate,
-        ),
-        domainName: props.apigw.route53RecordName,
-        endpointType: aws_apigateway.EndpointType.EDGE,
-        mapping: api,
-        basePath: props.apigw.basePath,
-      },
-    );
+    const apigwCustomDomainName = new aws_apigateway.DomainName(this, "CustomDomain", {
+      certificate: acm.Certificate.fromCertificateArn(this, "certificate", props.apigw.certificate),
+      domainName: props.apigw.route53RecordName,
+      endpointType: aws_apigateway.EndpointType.EDGE,
+      mapping: api,
+      basePath: props.apigw.basePath,
+    });
     // Route 53 for cloudfront
-    const hostedZone = aws_route53.HostedZone.fromLookup(
-      this,
-      "ApigwHostedZone",
-      {
-        domainName: props.apigw.route53DomainName,
-      },
-    );
+    const hostedZone = aws_route53.HostedZone.fromLookup(this, "ApigwHostedZone", {
+      domainName: props.apigw.route53DomainName,
+    });
     new aws_route53.ARecord(this, "ARecord", {
       zone: hostedZone,
       recordName: props.apigw.route53RecordName,
-      target: aws_route53.RecordTarget.fromAlias(
-        new aws_route53_targets.ApiGatewayDomain(apigwCustomDomainName),
-      ),
+      target: aws_route53.RecordTarget.fromAlias(new aws_route53_targets.ApiGatewayDomain(apigwCustomDomainName)),
     });
   }
 }

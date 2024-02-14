@@ -54,15 +54,10 @@ export class AuthorizationGroupAndRole extends Construct {
   readonly userPool: IUserPoolAuthenticationProvider;
   readonly roleMapping: IdentityPoolRoleMapping;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    props: AuthorizationGroupAndRoleProps,
-  ) {
+  constructor(scope: Construct, id: string, props: AuthorizationGroupAndRoleProps) {
     super(scope, id);
 
-    const { environment, servicePrefix, userPool, callbackUrls, logoutUrls } =
-      props;
+    const { environment, servicePrefix, userPool, callbackUrls, logoutUrls } = props;
 
     // App Clients
     const privateClient = userPool.addClient(`${servicePrefix}-PrivateClient`, {

@@ -5,15 +5,11 @@ import {
   aws_lambda,
   aws_route53,
   aws_route53_targets,
+  aws_apigatewayv2,
+  aws_apigatewayv2_integrations,
   Duration,
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import {
-  DomainName,
-  EndpointType,
-  HttpApi,
-} from "@aws-cdk/aws-apigatewayv2-alpha";
 import { environment, IFrontendEnvironment } from "./common";
 
 export interface FrontendProps {
@@ -36,11 +32,7 @@ export class Frontend extends Construct {
     super(scope, id);
 
     const { servicePrefix, environment } = props;
-    const ecrRepositoryFrontend = aws_ecr.Repository.fromRepositoryArn(
-      this,
-      "EcrRepository",
-      props.ecr.repositoryArn,
-    );
+    const ecrRepositoryFrontend = aws_ecr.Repository.fromRepositoryArn(this, "EcrRepository", props.ecr.repositoryArn);
     const role = new aws_iam.Role(this, "LambdaRole", {
       roleName: `${servicePrefix}-lambda-frontend-role-${environment}`,
       assumedBy: new aws_iam.ServicePrincipal("lambda.amazonaws.com"),
@@ -71,13 +63,9 @@ export class Frontend extends Construct {
     });
 
     // Route 53 for api-gw
-    const hostedZone = aws_route53.HostedZone.fromLookup(
-      this,
-      "apigw-hosted-zone",
-      {
-        domainName: props.apigw.route53DomainName,
-      },
-    );
+    const hostedZone = aws_route53.HostedZone.fromLookup(this, "apigw-hosted-zone", {
+      domainName: props.apigw.route53DomainName,
+    });
     const certificate = new acm.Certificate(this, "certificate", {
       domainName: props.apigw.route53RecordName,
       certificateName: `${servicePrefix}-frontend-${props.environment}`,
@@ -85,10 +73,10 @@ export class Frontend extends Construct {
     });
 
     // カスタムドメインの設定
-    const apigwCustomDomainName = new DomainName(this, "CustomDomain", {
+    const apigwCustomDomainName = new aws_apigatewayv2.DomainName(this, "CustomDomain", {
       certificate,
       domainName: props.apigw.route53RecordName,
-      endpointType: EndpointType.REGIONAL,
+      endpointType: aws_apigatewayv2.EndpointType.REGIONAL,
     });
     new aws_route53.ARecord(this, "ARecord", {
       zone: hostedZone,
@@ -102,9 +90,9 @@ export class Frontend extends Construct {
     });
 
     // Amazon API Gateway HTTP APIの定義
-    new HttpApi(this, "Api", {
+    new aws_apigatewayv2.HttpApi(this, "Api", {
       apiName: `${servicePrefix}-frontend`,
-      defaultIntegration: new HttpLambdaIntegration("Integration", handler),
+      defaultIntegration: new aws_apigatewayv2_integrations.HttpLambdaIntegration("Integration", handler),
       defaultDomainMapping: {
         domainName: apigwCustomDomainName,
       },

@@ -7,12 +7,7 @@ import { paramsBackend, paramsFrontend } from "./params";
 export interface ApplicationStackProps {}
 
 export class ApplicationStack extends Stack {
-  constructor(
-    scope: Construct,
-    id: string,
-    params: ApplicationStackProps,
-    props: StackProps,
-  ) {
+  constructor(scope: Construct, id: string, params: ApplicationStackProps, props: StackProps) {
     super(scope, id, props);
 
     // バックエンド

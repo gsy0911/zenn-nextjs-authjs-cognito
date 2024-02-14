@@ -2,10 +2,7 @@ import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { Authentication } from "./constructs/authentication";
-import {
-  Authorization,
-  AuthorizationGroupAndRole,
-} from "./constructs/authorization";
+import { Authorization, AuthorizationGroupAndRole } from "./constructs/authorization";
 
 export interface AuthStackProps {
   domainPrefix: string;
@@ -17,12 +14,7 @@ export interface AuthStackProps {
 }
 
 export class AuthStack extends Stack {
-  constructor(
-    scope: Construct,
-    id: string,
-    params: AuthStackProps,
-    props: StackProps,
-  ) {
+  constructor(scope: Construct, id: string, params: AuthStackProps, props: StackProps) {
     super(scope, id, props);
 
     const { domainPrefix } = params;
