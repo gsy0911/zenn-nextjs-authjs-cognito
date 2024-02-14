@@ -20,3 +20,12 @@ new lib.Frontend(app, `${lib.prefix}-frontend`, lib.paramsFrontend, {
   env: lib.env,
   description: lib.description,
 });
+new lib.FrontendWildcardDomain(
+  app,
+  `${lib.prefix}-frontend-wildcard-domain`,
+  lib.paramsFrontendWildCard,
+  {
+    env: lib.env,
+    description: lib.description,
+  },
+);

@@ -45,7 +45,7 @@ export interface IFrontend {
     certificate: `arn:aws:acm:us-east-1:${string}:certificate/${string}`;
     route53DomainName: string;
     route53RecordName: string;
-    cachePolicyIdForApigw: `${string}-${string}-${string}-${string}-${string}`
+    cachePolicyIdForApigw: `${string}-${string}-${string}-${string}-${string}`;
   };
 }
 
