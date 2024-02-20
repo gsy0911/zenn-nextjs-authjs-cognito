@@ -6,10 +6,10 @@ import { Authorization, AuthorizationGroupAndRole } from "./constructs/authoriza
 
 export interface AuthStackProps {
   domainPrefix: string;
+  idPoolId: `ap-northeast-1:${string}`;
   app1: {
     apigwId: string;
     s3Bucket: string;
-    idPoolId: `ap-northeast-1:${string}`;
   };
 }
 
@@ -52,7 +52,7 @@ export class AuthStack extends Stack {
         adminRoleResources: app1AdminOnlyResource(params.app1.apigwId),
         userRoleResources: app1UserOnlyResource(params.app1.apigwId),
         s3Bucket: params.app1.s3Bucket,
-        idPoolId: params.app1.idPoolId,
+        idPoolId: params.idPoolId,
       },
     });
 
