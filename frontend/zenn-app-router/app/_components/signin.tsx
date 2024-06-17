@@ -25,8 +25,7 @@ export const SignInPage = () => {
     validateInputOnChange: true,
     validateInputOnBlur: true,
     validate: {
-      email: (value) =>
-        /^\S+@\S+$/.test(value) ? null : "不正なメールアドレスです。",
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "不正なメールアドレスです。"),
       password: (value) =>
         value.length < 8
           ? "パスワードは8文字以上入力してください。"
@@ -66,12 +65,7 @@ export const SignInPage = () => {
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={form.onSubmit(onSubmit)}>
-          <TextInput
-            label="Email"
-            placeholder="you@mantine.dev"
-            required
-            {...form.getInputProps("email")}
-          />
+          <TextInput label="Email" placeholder="you@mantine.dev" required {...form.getInputProps("email")} />
           <PasswordInput
             label="Password"
             placeholder="Your password"

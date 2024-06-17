@@ -1,11 +1,11 @@
-import { Session, AuthOptions, User } from "next-auth";
-import { JWT } from "next-auth/jwt";
+import type { Session, AuthOptions, User } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import CognitoProvider from "next-auth/providers/cognito";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { Issuer } from "openid-client";
 import * as crypto from "crypto";
 import {
-  AdminInitiateAuthCommandInput,
+  type AdminInitiateAuthCommandInput,
   AdminInitiateAuthCommand,
   CognitoIdentityProviderClient,
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -56,8 +56,7 @@ async function refreshAccessToken(token: any): Promise<JWT> {
       throw newTokens;
     }
     // Next expiration period
-    const accessTokenExpires =
-      Math.floor(Date.now() / 1000) + newTokens.expires_in;
+    const accessTokenExpires = Math.floor(Date.now() / 1000) + newTokens.expires_in;
     console.debug(`Token refreshed (expires at: ${accessTokenExpires})`);
     // Return new token set
     return {
@@ -100,9 +99,7 @@ const signIn = async (username: string, password: string, origin?: string) => {
     const expiresIn = user.AuthenticationResult?.ExpiresIn || 3600;
     const accessTokenExpires = Math.floor(Date.now() / 1000) + expiresIn;
     if (user.AuthenticationResult?.IdToken) {
-      const decodedIdToken = get_jwt_decoded(
-        user.AuthenticationResult?.IdToken,
-      );
+      const decodedIdToken = get_jwt_decoded(user.AuthenticationResult?.IdToken);
       return {
         id: decodedIdToken.sub || "",
         name: decodedIdToken.email || "",
@@ -130,14 +127,10 @@ export const authOptions: AuthOptions = {
           placeholder: "ユーザー名",
         },
         password: { label: "パスワード", type: "password" },
-        origin: {label: "オリジン", type: "text"},
+        origin: { label: "オリジン", type: "text" },
       },
       authorize: async (credentials, req) => {
-        const user = await signIn(
-          credentials?.username || "",
-          credentials?.password || "",
-            credentials?.origin || ""
-        );
+        const user = await signIn(credentials?.username || "", credentials?.password || "", credentials?.origin || "");
 
         if (user) {
           // 返されたオブジェクトはすべて、JWTの `user` プロパティに保存されます。
@@ -198,17 +191,14 @@ export const authOptions: AuthOptions = {
         console.log(`account: ${JSON.stringify(account)}`);
         token.idToken = account.id_token || user.idToken;
         token.accessToken = account.access_token || user.accessToken;
-        token.accessTokenExpires =
-          account.expires_at || user.accessTokenExpires;
+        token.accessTokenExpires = account.expires_at || user.accessTokenExpires;
         token.refreshToken = account.refresh_token || user.refreshToken;
         token.origin = user.origin || "";
         return token;
       }
       // Return previous token if the access token has not expired yet
       if (Date.now() < (token.accessTokenExpires ?? 0) * 1000) {
-        console.debug(
-          `Token available (expires at: ${token.accessTokenExpires})`,
-        );
+        console.debug(`Token available (expires at: ${token.accessTokenExpires})`);
         return token;
       }
       console.debug(`Token expired at ${token.accessTokenExpires}`);

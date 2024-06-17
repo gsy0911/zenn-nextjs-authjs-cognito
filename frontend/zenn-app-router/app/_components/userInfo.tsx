@@ -1,15 +1,5 @@
 "use client";
-import {
-  Avatar,
-  Text,
-  Button,
-  Paper,
-  Container,
-  LoadingOverlay,
-  Space,
-  Group,
-  Divider,
-} from "@mantine/core";
+import { Avatar, Text, Button, Paper, Container, LoadingOverlay, Space, Group, Divider } from "@mantine/core";
 import axios from "axios";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -91,38 +81,22 @@ export const UserInfo = () => {
           サインアウト
         </Button>
         <Space h={"md"} />
-        <Divider
-          label={"authorization-check: API Gateway"}
-          labelPosition={"center"}
-          variant={"dashed"}
-        />
+        <Divider label={"authorization-check: API Gateway"} labelPosition={"center"} variant={"dashed"} />
 
         <Group grow>
           <Button onClick={onAdminClick}>/admin</Button>
           <Button onClick={onUserClick}>/user</Button>
         </Group>
         <Space h={"md"} />
-        <Divider
-          label={"response"}
-          labelPosition={"center"}
-          variant={"dashed"}
-        />
+        <Divider label={"response"} labelPosition={"center"} variant={"dashed"} />
         {message1}
         <Space h={"md"} />
-        <Divider
-          label={"authorization-check: S3 File Read"}
-          labelPosition={"center"}
-          variant={"dashed"}
-        />
+        <Divider label={"authorization-check: S3 File Read"} labelPosition={"center"} variant={"dashed"} />
         <Group grow>
           <Button onClick={onReadFileClick}>GET /read-file</Button>
         </Group>
         <Space h={"md"} />
-        <Divider
-          label={"response"}
-          labelPosition={"center"}
-          variant={"dashed"}
-        />
+        <Divider label={"response"} labelPosition={"center"} variant={"dashed"} />
         {message2}
       </Paper>
     </Container>

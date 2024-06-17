@@ -4,16 +4,16 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/authOptions";
 import axios from "axios";
 import {
-  GetIdCommandInput,
+  type GetIdCommandInput,
   GetIdCommand,
-  GetCredentialsForIdentityCommandInput,
-  GetCredentialsForIdentityCommandOutput,
+  type GetCredentialsForIdentityCommandInput,
+  type GetCredentialsForIdentityCommandOutput,
   GetCredentialsForIdentityCommand,
   CognitoIdentityClient,
 } from "@aws-sdk/client-cognito-identity";
 import { SignatureV4 } from "@aws-sdk/signature-v4";
 import { HttpRequest } from "@aws-sdk/protocol-http";
-import { QueryParameterBag } from "@aws-sdk/types";
+import type { QueryParameterBag } from "@aws-sdk/types";
 import { Sha256 } from "@aws-crypto/sha256-universal";
 import { createFormActions } from "@mantine/form";
 
@@ -26,9 +26,7 @@ interface ServerResponse {
   data: { [key: string]: string } | null;
 }
 
-const getCredentialsFromIdToken = async (
-  idToken: string,
-): Promise<GetCredentialsForIdentityCommandOutput> => {
+const getCredentialsFromIdToken = async (idToken: string): Promise<GetCredentialsForIdentityCommandOutput> => {
   const client = new CognitoIdentityClient({
     region: process.env.COGNITO_REGION,
   });
@@ -40,14 +38,11 @@ const getCredentialsFromIdToken = async (
   };
   const identityId = await client.send(new GetIdCommand(getIdCommandInput));
 
-  const getCredentialsForIdentityCommandInput: GetCredentialsForIdentityCommandInput =
-    {
-      IdentityId: identityId.IdentityId,
-      Logins: { [loginsKey]: idToken },
-    };
-  return await client.send(
-    new GetCredentialsForIdentityCommand(getCredentialsForIdentityCommandInput),
-  );
+  const getCredentialsForIdentityCommandInput: GetCredentialsForIdentityCommandInput = {
+    IdentityId: identityId.IdentityId,
+    Logins: { [loginsKey]: idToken },
+  };
+  return await client.send(new GetCredentialsForIdentityCommand(getCredentialsForIdentityCommandInput));
 };
 
 const getSignedHeaders = async (
@@ -80,20 +75,17 @@ const getSignedHeaders = async (
   return signedRequest.headers;
 };
 
-
 export const onAdminClick = async (_: ServerResponse, fd: ServerRequest): Promise<ServerResponse> => {
   const session = await getServerSession(authOptions);
-  const credentials = await getCredentialsFromIdToken(
-    session?.user?.idToken || "",
-  );
+  const credentials = await getCredentialsFromIdToken(session?.user?.idToken || "");
   const signedHeaders = await getSignedHeaders(
     credentials,
     new URL(`${process.env.BACKEND_API_ENDPOINT}/v1/admin`),
     {},
   );
-  console.log(`fd: ${JSON.stringify(fd)}`)
+  console.log(`fd: ${JSON.stringify(fd)}`);
   // console.log(`fd.message: ${JSON.stringify(fd.get("message"))}`)
-  console.log(`fd.message: ${JSON.stringify(fd.message)}`)
+  console.log(`fd.message: ${JSON.stringify(fd.message)}`);
   return axios({
     url: `${process.env.BACKEND_API_ENDPOINT}/v1/admin`,
     method: "GET",

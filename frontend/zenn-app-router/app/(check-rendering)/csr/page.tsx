@@ -27,27 +27,25 @@ const CsrPage = () => {
   const { data: session } = useSession();
   const user = session?.user;
   const form = useForm({
-      initialValues: {
-          message: ""
-      }
-  })
+    initialValues: {
+      message: "",
+    },
+  });
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await fetch(
-      "https://jsonplaceholder.typicode.com/todos/1",
-    );
+    const response = await fetch("https://jsonplaceholder.typicode.com/todos/1");
     const todo: CsrTodo = await response.json();
     setData(todo);
   };
 
   const onFormSubmit = () => {
-      console.log("")
-      adminAction({message: "hello"})
-  }
+    console.log("");
+    adminAction({ message: "hello" });
+  };
 
   return (
     <NextAuthProviders>
@@ -64,24 +62,20 @@ const CsrPage = () => {
         <ListItem> idToken : {user?.idToken}</ListItem>
         <ListItem> origin : {user?.origin}</ListItem>
       </List>
-      <Divider
-        label={"authorization-check: API Gateway"}
-        labelPosition={"center"}
-        variant={"dashed"}
-      />
+      <Divider label={"authorization-check: API Gateway"} labelPosition={"center"} variant={"dashed"} />
 
       <Group grow>
         <form onSubmit={form.onSubmit(adminAction)}>
-            <TextInput
-                type={"text"}
-                placeholder={"hello, world"}
-                label={"message"}
-                withAsterisk
-                // name={"message"}
-                // value={message}
-                // onChange={e => setMessage(e.target.value)}
-                {...form.getInputProps("message")}
-            />
+          <TextInput
+            type={"text"}
+            placeholder={"hello, world"}
+            label={"message"}
+            withAsterisk
+            // name={"message"}
+            // value={message}
+            // onChange={e => setMessage(e.target.value)}
+            {...form.getInputProps("message")}
+          />
           <Button type="submit">/admin</Button>
         </form>
         {/*<Button onClick={onAdminClick}>/admin</Button>*/}

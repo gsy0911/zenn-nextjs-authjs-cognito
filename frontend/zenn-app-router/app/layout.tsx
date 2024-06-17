@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
@@ -8,12 +8,12 @@ import { NextAuthProviders } from "@/app/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export async function getServerSideProps({req, res}: GetServerSidePropsContext)  {
-    const referer = req.headers.referer;
-    console.log(`ref: ${referer}`)
-    return {
-        props: {primaryColor: "green"}
-    }
+export async function getServerSideProps({ req, res }: GetServerSidePropsContext) {
+  const referer = req.headers.referer;
+  console.log(`ref: ${referer}`);
+  return {
+    props: { primaryColor: "green" },
+  };
 }
 
 export const metadata: Metadata = {
@@ -22,12 +22,12 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({
-  children, primaryColor
+  children,
+  primaryColor,
 }: {
   children: React.ReactNode;
   primaryColor: string;
 }) {
-
   return (
     <html lang="en">
       <head title={"zenn-app-router"}>
@@ -36,14 +36,14 @@ export default async function RootLayout({
       <body className={inter.className}>
         <NextAuthProviders>
           <MantineProvider
-              theme={{
-                  primaryColor,
-              }}
+            theme={{
+              primaryColor,
+            }}
           >
-              <>{primaryColor}
-                  {children}
-              </>
-
+            <>
+              {primaryColor}
+              {children}
+            </>
           </MantineProvider>
         </NextAuthProviders>
       </body>
