@@ -19,7 +19,7 @@ export class Authentication extends Construct {
       userPoolName: `${servicePrefix}-user-pool-${environment}`,
       // signUp
       // By default, self sign up is disabled. Otherwise use userInvitation
-      selfSignUpEnabled: false,
+      selfSignUpEnabled: true,
       userVerification: {
         emailSubject: "Verify email message",
         emailBody: "Thanks for signing up! Your verification code is {####}",
@@ -28,7 +28,6 @@ export class Authentication extends Construct {
       },
       // sign in
       signInAliases: {
-        username: true,
         email: true,
       },
       // user attributes
