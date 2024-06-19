@@ -16,7 +16,7 @@ export default function Home() {
   }
   if (status === "unauthenticated") {
     return (
-      <MantineProviders color={"red"}>
+      <MantineProviders color={"blue"}>
         <SignInPage />
       </MantineProviders>
     );

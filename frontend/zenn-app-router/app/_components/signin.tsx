@@ -2,6 +2,7 @@
 import {
   TextInput,
   PasswordInput,
+  Center,
   Checkbox,
   Anchor,
   Paper,
@@ -55,13 +56,17 @@ export const SignInPage = () => {
 
   return (
     <Container size={420} my={40}>
-      <Title>Welcome back!</Title>
-      <Text c="dimmed" size="sm" mt={5}>
-        Do not have an account yet?{" "}
-        <Anchor size="sm" component="button">
-          Create account
-        </Anchor>
-      </Text>
+      <Center>
+        <Title>Welcome back!</Title>
+      </Center>
+      <Center>
+        <Text c="dimmed" size="sm" mt={5}>
+          Do not have an account yet?{" "}
+          <Anchor size="sm" href={"/sign-up"}>
+            Create account
+          </Anchor>
+        </Text>
+      </Center>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={form.onSubmit(onSubmit)}>

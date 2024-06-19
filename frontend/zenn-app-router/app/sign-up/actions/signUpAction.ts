@@ -1,7 +1,6 @@
 "use server";
 import { cognitoSignUp, cognitoConfirmSignUp } from "@/common/api/cognito";
 import { UsernameExistsException } from "@aws-sdk/client-cognito-identity-provider";
-import { redirect } from "next/navigation";
 
 interface OnAuthSignUpRequest {
   email: string;
@@ -34,5 +33,5 @@ export const onCognitoConfirmSignUp = async (_: string | null, formData: OnAuthC
   const { email, confirmationCode } = formData;
   await cognitoConfirmSignUp({ email, confirmationCode });
 
-  redirect("/sign-up/complete");
+  return "Success";
 };

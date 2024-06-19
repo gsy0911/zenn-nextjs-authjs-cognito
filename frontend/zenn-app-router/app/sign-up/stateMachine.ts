@@ -1,35 +1,20 @@
 import { setup, assign } from "xstate";
 
 type SignUpFlowContext = {
-  applicationContent?: string; // 申請内容
+  signUpState: string | null;
+  confirmState: string | null;
 };
 
-type SignUpEvent = { type: "signUp" }; // 作成者が提出。申請内容を含む。
-type ConfirmViaEmailEvent = { type: "confirmViaEmail" }; // 承認者が承認
-type ResetPasswordEvent = { type: "resetPassword" }; // 承認者が差し戻し
+type SignUpEvent = { type: "signUp"; signUpState: string | null };
+type ConfirmViaEmailEvent = { type: "confirmViaEmail"; confirmState: string | null };
+type ResetPasswordEvent = { type: "resetPassword" };
 
 type SignUpFlowEvent = SignUpEvent | ConfirmViaEmailEvent | ResetPasswordEvent;
 
 // 現状は assign 関数のジェネリクスに型引数を5つ渡さないとちゃんと型補完が効かなさそうです。
-// const submitAction = assign<
-//   ApprovalFlowContext,
-//   SubmitEvent,
-//   any,
-//   ApprovalFlowEvent,
-//   any
-// >({
-//   applicationContent: ({ context, event }) => event.content,
-// })
-//
-// const resubmitAction = assign<
-//   ApprovalFlowContext,
-//   ResubmitEvent,
-//   any,
-//   ApprovalFlowEvent,
-//   any
-// >({
-//   applicationContent: ({ context, event }) => event.content,
-// })
+const signUpAction = assign<SignUpFlowContext, SignUpEvent, any, SignUpFlowEvent, any>({
+  signUpState: ({ event }) => event.signUpState,
+});
 
 export const signUpFlowMachine = setup({
   types: {
@@ -40,18 +25,25 @@ export const signUpFlowMachine = setup({
   id: "signUpMachine",
   initial: "initial",
   context: {
-    applicationContent: "",
+    signUpState: null,
+    confirmState: null,
   },
   states: {
     /**
-     * 例えば draft 状態のときに submit イベントが発生した場合、pending 状態に遷移し、
-     * 状態遷移の際に submitAction 関数を実行する、という読み方ができます。
+     * 例えば initial(初期表示) 状態のときに signUp(=SignUpEventで定義している`type`) イベントが発生した場合、registered 状態に遷移する
      **/
     initial: {
       on: {
-        signUp: {
-          target: "registered",
-        },
+        signUp: [
+          {
+            target: "registered",
+            guard: ({ event }) => event.signUpState === "Success",
+          },
+          {
+            target: "signUpError",
+            actions: [signUpAction],
+          },
+        ],
       },
     },
     registered: {
@@ -69,5 +61,7 @@ export const signUpFlowMachine = setup({
         },
       },
     },
+    signUpError: {},
+    confirmError: {},
   },
 });

@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import {
   Center,
   TextInput,
@@ -10,6 +11,7 @@ import {
   Container,
   Group,
   Button,
+  Anchor,
 } from "@mantine/core";
 import { useFormState } from "react-dom";
 import { useForm } from "@mantine/form";
@@ -64,12 +66,29 @@ export const SignUpXState = () => {
     },
   });
 
+  useEffect(() => {
+    const updateSignUpState = () => {
+      if (signUpState) {
+        send({ type: "signUp", signUpState });
+      }
+    };
+    updateSignUpState();
+  }, [signUpState]);
+
+  useEffect(() => {
+    const updateConfirmationState = () => {
+      if (confirmState) {
+        send({ type: "confirmViaEmail", confirmState });
+      }
+    };
+    updateConfirmationState();
+  }, [confirmState]);
+
   const onSignUp = () => {
     signUpAction({
       email: form.values.email,
       password: form.values.password,
     });
-    send({ type: "signUp" });
   };
 
   const onConfirmViaEmail = () => {
@@ -77,7 +96,6 @@ export const SignUpXState = () => {
       email: form.values.email,
       confirmationCode: form.values.confirmationCode,
     });
-    send({ type: "confirmViaEmail" });
   };
 
   return (
@@ -89,7 +107,10 @@ export const SignUpXState = () => {
           </Center>
           <Center>
             <Text c={"dimmed"} size={"sm"} mt={5}>
-              You are to create account.
+              You are to create an account, or{" "}
+              <Anchor size="sm" href={"/"}>
+                Already have an account
+              </Anchor>
             </Text>
           </Center>
 
@@ -109,6 +130,22 @@ export const SignUpXState = () => {
               Sign up
             </Button>
           </Paper>
+        </>
+      )}
+
+      {current.matches("signUpError") && (
+        <>
+          <Center>
+            <Title c={"#333"}>SignUp Error!</Title>
+          </Center>
+          <Center>
+            <Text c={"dimmed"} size={"sm"} mt={5}>
+              {current.context.signUpState}.{" "}
+              <Anchor size="sm" href={"/"}>
+                try again.
+              </Anchor>
+            </Text>
+          </Center>
         </>
       )}
 
@@ -134,6 +171,22 @@ export const SignUpXState = () => {
               Confirm
             </Button>
           </Paper>
+        </>
+      )}
+
+      {current.matches("confirmed") && (
+        <>
+          <Center>
+            <Title c={"#333"}>Sign Up Complete!</Title>
+          </Center>
+          <Center>
+            <Text c={"dimmed"} size={"sm"} mt={5}>
+              Welcome to our Site.
+            </Text>
+          </Center>
+          <Button fullWidth mt="xl" component={"a"} href={"/"}>
+            Back home to Sign-in
+          </Button>
         </>
       )}
     </Container>
