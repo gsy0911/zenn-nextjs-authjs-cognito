@@ -23,7 +23,6 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  primaryColor,
 }: {
   children: React.ReactNode;
   primaryColor: string;
@@ -37,13 +36,10 @@ export default async function RootLayout({
         <NextAuthProviders>
           <MantineProvider
             theme={{
-              primaryColor,
+              primaryColor: "blue",
             }}
           >
-            <>
-              {primaryColor}
-              {children}
-            </>
+            <>{children}</>
           </MantineProvider>
         </NextAuthProviders>
       </body>

@@ -58,7 +58,12 @@ export const SignUpXState = () => {
         };
       } else if (current.matches("registered")) {
         return {
-          confirmationCode: values.confirmationCode === "" ? "入力は必須です" : values.confirmationCode.length !== 6 ? "コードの長さが違います。" : null,
+          confirmationCode:
+            values.confirmationCode === ""
+              ? "入力は必須です"
+              : values.confirmationCode.length !== 6
+                ? "コードの長さが違います。"
+                : null,
         };
       }
 
@@ -96,7 +101,7 @@ export const SignUpXState = () => {
       email: form.values.email,
       confirmationCode: form.values.confirmationCode,
     });
-    form.setValues({confirmationCode: ""});
+    form.setValues({ confirmationCode: "" });
   };
 
   return (

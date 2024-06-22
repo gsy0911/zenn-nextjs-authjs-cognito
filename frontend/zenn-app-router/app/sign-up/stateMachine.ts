@@ -52,14 +52,16 @@ export const signUpFlowMachine = setup({
     },
     registered: {
       on: {
-        confirmViaEmail: [{
-          target: "confirmed",
-          guard: ({ event }) => event.confirmState === "Success",
-        },
-        {
-          target: "registered",
-          actions: [confirmAction]
-        }]
+        confirmViaEmail: [
+          {
+            target: "confirmed",
+            guard: ({ event }) => event.confirmState === "Success",
+          },
+          {
+            target: "registered",
+            actions: [confirmAction],
+          },
+        ],
       },
     },
     confirmed: {},

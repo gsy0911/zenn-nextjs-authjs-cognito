@@ -1,6 +1,11 @@
 "use server";
 import { cognitoSignUp, cognitoConfirmSignUp } from "@/common/api/cognito";
-import { UsernameExistsException, CodeMismatchException, ExpiredCodeException, InvalidParameterException } from "@aws-sdk/client-cognito-identity-provider";
+import {
+  UsernameExistsException,
+  CodeMismatchException,
+  ExpiredCodeException,
+  InvalidParameterException,
+} from "@aws-sdk/client-cognito-identity-provider";
 
 interface OnAuthSignUpRequest {
   email: string;
@@ -20,7 +25,6 @@ export const onCognitoSignUp = async (_: string | null, formData: OnAuthSignUpRe
     return "Unknown";
   }
 
-  // エラーが発生しなかった場合、成功として画面に遷移する
   return "Success";
 };
 
