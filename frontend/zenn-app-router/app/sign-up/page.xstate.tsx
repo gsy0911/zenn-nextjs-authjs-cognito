@@ -58,7 +58,7 @@ export const SignUpXState = () => {
         };
       } else if (current.matches("registered")) {
         return {
-          confirmationCode: values.confirmationCode === "" ? "入力は必須です" : null,
+          confirmationCode: values.confirmationCode === "" ? "入力は必須です" : values.confirmationCode.length !== 6 ? "コードの長さが違います。" : null,
         };
       }
 
@@ -96,6 +96,7 @@ export const SignUpXState = () => {
       email: form.values.email,
       confirmationCode: form.values.confirmationCode,
     });
+    form.setValues({confirmationCode: ""});
   };
 
   return (
@@ -167,7 +168,13 @@ export const SignUpXState = () => {
               required
               {...form.getInputProps("confirmationCode")}
             />
-            <Button fullWidth mt="xl" onClick={onConfirmViaEmail}>
+            <Text c={"red"} size={"xs"}>
+              {current.context.confirmState === "CodeMismatchException" && form.values.confirmationCode === "" && (
+                <>コードが一致しません</>
+              )}
+            </Text>
+
+            <Button fullWidth mt="xl" onClick={onConfirmViaEmail} disabled={!form.isValid()}>
               Confirm
             </Button>
           </Paper>

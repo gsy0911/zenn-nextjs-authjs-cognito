@@ -16,6 +16,10 @@ const signUpAction = assign<SignUpFlowContext, SignUpEvent, any, SignUpFlowEvent
   signUpState: ({ event }) => event.signUpState,
 });
 
+const confirmAction = assign<SignUpFlowContext, ConfirmViaEmailEvent, any, SignUpFlowEvent, any>({
+  confirmState: ({ event }) => event.confirmState,
+});
+
 export const signUpFlowMachine = setup({
   types: {
     context: {} as SignUpFlowContext,
@@ -48,20 +52,17 @@ export const signUpFlowMachine = setup({
     },
     registered: {
       on: {
-        confirmViaEmail: {
+        confirmViaEmail: [{
           target: "confirmed",
+          guard: ({ event }) => event.confirmState === "Success",
         },
+        {
+          target: "registered",
+          actions: [confirmAction]
+        }]
       },
     },
     confirmed: {},
-    forceChangePassword: {
-      on: {
-        resetPassword: {
-          target: "confirmed",
-        },
-      },
-    },
     signUpError: {},
-    confirmError: {},
   },
 });

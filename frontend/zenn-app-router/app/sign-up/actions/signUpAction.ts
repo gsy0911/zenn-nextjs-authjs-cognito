@@ -1,6 +1,6 @@
 "use server";
 import { cognitoSignUp, cognitoConfirmSignUp } from "@/common/api/cognito";
-import { UsernameExistsException } from "@aws-sdk/client-cognito-identity-provider";
+import { UsernameExistsException, CodeMismatchException, ExpiredCodeException, InvalidParameterException } from "@aws-sdk/client-cognito-identity-provider";
 
 interface OnAuthSignUpRequest {
   email: string;
@@ -11,7 +11,7 @@ export const onCognitoSignUp = async (_: string | null, formData: OnAuthSignUpRe
   const { email, password } = formData;
 
   try {
-    const commandResponse = await cognitoSignUp({ email, password });
+    await cognitoSignUp({ email, password });
   } catch (err) {
     console.log(err);
     if (err instanceof UsernameExistsException) {
@@ -31,7 +31,19 @@ interface OnAuthConfirmSignUpRequest {
 
 export const onCognitoConfirmSignUp = async (_: string | null, formData: OnAuthConfirmSignUpRequest) => {
   const { email, confirmationCode } = formData;
-  await cognitoConfirmSignUp({ email, confirmationCode });
+
+  try {
+    await cognitoConfirmSignUp({ email, confirmationCode });
+  } catch (err) {
+    if (err instanceof ExpiredCodeException) {
+      return "ExpiredCodeException";
+    } else if (err instanceof CodeMismatchException) {
+      return "CodeMismatchException";
+    } else if (err instanceof InvalidParameterException) {
+      return "InvalidParameterException";
+    }
+    return "Unknown";
+  }
 
   return "Success";
 };
