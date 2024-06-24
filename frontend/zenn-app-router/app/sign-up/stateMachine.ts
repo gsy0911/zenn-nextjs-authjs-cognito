@@ -5,18 +5,19 @@ type SignUpFlowContext = {
   confirmState: string | null;
 };
 
-type SignUpEvent = { type: "signUp"; signUpState: string | null };
-type ConfirmViaEmailEvent = { type: "confirmViaEmail"; confirmState: string | null };
-type ResetPasswordEvent = { type: "resetPassword" };
+type SignUpEvent = { type: "signUp" };
+type PostSignUpEvent = { type: "postSignUp"; signUpState: string | null };
+type ConfirmViaEmailEvent = { type: "confirmViaEmail" };
+type PostConfirmViaEmailEvent = { type: "postConfirmViaEmail"; confirmState: string | null };
 
-type SignUpFlowEvent = SignUpEvent | ConfirmViaEmailEvent | ResetPasswordEvent;
+type SignUpFlowEvent = SignUpEvent | PostSignUpEvent | ConfirmViaEmailEvent | PostConfirmViaEmailEvent;
 
 // 現状は assign 関数のジェネリクスに型引数を5つ渡さないとちゃんと型補完が効かなさそうです。
-const signUpAction = assign<SignUpFlowContext, SignUpEvent, any, SignUpFlowEvent, any>({
+const signUpAction = assign<SignUpFlowContext, PostSignUpEvent, any, SignUpFlowEvent, any>({
   signUpState: ({ event }) => event.signUpState,
 });
 
-const confirmAction = assign<SignUpFlowContext, ConfirmViaEmailEvent, any, SignUpFlowEvent, any>({
+const confirmAction = assign<SignUpFlowContext, PostConfirmViaEmailEvent, any, SignUpFlowEvent, any>({
   confirmState: ({ event }) => event.confirmState,
 });
 
@@ -38,13 +39,20 @@ export const signUpFlowMachine = setup({
      **/
     initial: {
       on: {
-        signUp: [
+        signUp: {
+          target: "registering",
+        },
+      },
+    },
+    registering: {
+      on: {
+        postSignUp: [
           {
             target: "registered",
             guard: ({ event }) => event.signUpState === "Success",
           },
           {
-            target: "signUpError",
+            target: "initial",
             actions: [signUpAction],
           },
         ],
@@ -52,7 +60,14 @@ export const signUpFlowMachine = setup({
     },
     registered: {
       on: {
-        confirmViaEmail: [
+        confirmViaEmail: {
+          target: "confirming",
+        },
+      },
+    },
+    confirming: {
+      on: {
+        postConfirmViaEmail: [
           {
             target: "confirmed",
             guard: ({ event }) => event.confirmState === "Success",
@@ -65,6 +80,5 @@ export const signUpFlowMachine = setup({
       },
     },
     confirmed: {},
-    signUpError: {},
   },
 });

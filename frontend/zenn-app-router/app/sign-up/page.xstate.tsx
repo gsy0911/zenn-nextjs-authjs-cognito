@@ -12,6 +12,8 @@ import {
   Group,
   Button,
   Anchor,
+  Box,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useFormState } from "react-dom";
 import { useForm } from "@mantine/form";
@@ -19,7 +21,6 @@ import { onCognitoSignUp, onCognitoConfirmSignUp } from "./actions";
 import { useMachine } from "@xstate/react";
 import { createBrowserInspector } from "@statelyai/inspect";
 import { signUpFlowMachine } from "./stateMachine";
-
 const { inspect } = createBrowserInspector();
 // see: https://ui.mantine.dev/category/authentication
 
@@ -74,29 +75,32 @@ export const SignUpXState = () => {
   useEffect(() => {
     const updateSignUpState = () => {
       if (signUpState) {
-        send({ type: "signUp", signUpState });
+        send({ type: "postSignUp", signUpState });
       }
     };
     updateSignUpState();
-  }, [signUpState]);
+  }, [signUpState, current]);
 
   useEffect(() => {
     const updateConfirmationState = () => {
       if (confirmState) {
-        send({ type: "confirmViaEmail", confirmState });
+        send({ type: "postConfirmViaEmail", confirmState });
       }
     };
     updateConfirmationState();
-  }, [confirmState]);
+  }, [confirmState, current]);
 
   const onSignUp = () => {
+    send({ type: "signUp" });
     signUpAction({
       email: form.values.email,
       password: form.values.password,
     });
+    form.setValues({ password: "" });
   };
 
   const onConfirmViaEmail = () => {
+    send({ type: "confirmViaEmail" });
     confirmAction({
       email: form.values.email,
       confirmationCode: form.values.confirmationCode,
@@ -106,7 +110,7 @@ export const SignUpXState = () => {
 
   return (
     <Container size={420} my={40}>
-      {current.matches("initial") && (
+      {(current.matches("initial") || current.matches("registering")) && (
         <>
           <Center>
             <Title c={"#333"}>Welcome!</Title>
@@ -120,42 +124,38 @@ export const SignUpXState = () => {
             </Text>
           </Center>
 
-          <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-            <TextInput label="Email" placeholder="you@mantine.dev" required {...form.getInputProps("email")} />
-            <PasswordInput
-              label="Password"
-              placeholder="Your password"
-              required
-              mt="md"
-              {...form.getInputProps("password")}
+          <Box pos="relative">
+            <LoadingOverlay
+              visible={current.matches("registering")}
+              zIndex={1000}
+              overlayProps={{ radius: "sm", blur: 2 }}
             />
-            <Group justify={"space-between"} mt="lg">
-              <Checkbox label="利用規約に同意する" {...form.getInputProps("check")} />
-            </Group>
-            <Button fullWidth mt="xl" onClick={onSignUp} disabled={!form.isValid()}>
-              Sign up
-            </Button>
-          </Paper>
+            <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+              <TextInput label="Email" placeholder="you@mantine.dev" required {...form.getInputProps("email")} />
+              <PasswordInput
+                label="Password"
+                placeholder="Your password"
+                required
+                mt="md"
+                {...form.getInputProps("password")}
+              />
+              <Text c={"red"} size={"xs"}>
+                {current.context.signUpState === "UsernameExistsException" && form.values.password === "" && (
+                  <>すでに存在するユーザーです</>
+                )}
+              </Text>
+              <Group justify={"space-between"} mt="lg">
+                <Checkbox label="利用規約に同意する" {...form.getInputProps("check")} />
+              </Group>
+              <Button fullWidth mt="xl" onClick={onSignUp} disabled={!form.isValid()}>
+                Sign up
+              </Button>
+            </Paper>
+          </Box>
         </>
       )}
 
-      {current.matches("signUpError") && (
-        <>
-          <Center>
-            <Title c={"#333"}>SignUp Error!</Title>
-          </Center>
-          <Center>
-            <Text c={"dimmed"} size={"sm"} mt={5}>
-              {current.context.signUpState}.{" "}
-              <Anchor size="sm" href={"/"}>
-                try again.
-              </Anchor>
-            </Text>
-          </Center>
-        </>
-      )}
-
-      {current.matches("registered") && (
+      {(current.matches("registered") || current.matches("confirming")) && (
         <>
           <Center>
             <Title c={"#333"}>Confirm now!</Title>
@@ -166,23 +166,33 @@ export const SignUpXState = () => {
             </Text>
           </Center>
 
-          <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-            <TextInput
-              label="Confirmation code"
-              placeholder="000111"
-              required
-              {...form.getInputProps("confirmationCode")}
+          <Box pos="relative">
+            <LoadingOverlay
+              visible={current.matches("confirming")}
+              zIndex={1000}
+              overlayProps={{ radius: "sm", blur: 2 }}
             />
-            <Text c={"red"} size={"xs"}>
-              {current.context.confirmState === "CodeMismatchException" && form.values.confirmationCode === "" && (
-                <>コードが一致しません</>
-              )}
-            </Text>
+            <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+              <TextInput
+                label="Confirmation code"
+                placeholder="000111"
+                required
+                {...form.getInputProps("confirmationCode")}
+              />
+              {current.context.confirmState}
+              <Text c={"red"} size={"xs"}>
+                {current.context.confirmState === "CodeMismatchException" && form.values.confirmationCode === "" && (
+                  <>コードが一致しません</>
+                )}
+                {current.context.confirmState === "InvalidParameterException" &&
+                  form.values.confirmationCode === "" && <>不正なパラメーターです</>}
+              </Text>
 
-            <Button fullWidth mt="xl" onClick={onConfirmViaEmail} disabled={!form.isValid()}>
-              Confirm
-            </Button>
-          </Paper>
+              <Button fullWidth mt="xl" onClick={onConfirmViaEmail} disabled={!form.isValid()}>
+                Confirm
+              </Button>
+            </Paper>
+          </Box>
         </>
       )}
 
