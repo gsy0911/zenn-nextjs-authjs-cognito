@@ -1,16 +1,16 @@
 import { setup, assign } from "xstate";
 
-type SignUpFlowContext = {
-  signUpState: string | null;
-  confirmState: string | null;
-};
-
 type SignUpEvent = { type: "signUp" };
 type PostSignUpEvent = { type: "postSignUp"; signUpState: string | null };
 type ConfirmViaEmailEvent = { type: "confirmViaEmail" };
 type PostConfirmViaEmailEvent = { type: "postConfirmViaEmail"; confirmState: string | null };
 
 type SignUpFlowEvent = SignUpEvent | PostSignUpEvent | ConfirmViaEmailEvent | PostConfirmViaEmailEvent;
+
+type SignUpFlowContext = {
+  signUpState: string | null;
+  confirmState: string | null;
+};
 
 // 現状は assign 関数のジェネリクスに型引数を5つ渡さないとちゃんと型補完が効かなさそうです。
 const signUpAction = assign<SignUpFlowContext, PostSignUpEvent, any, SignUpFlowEvent, any>({
@@ -35,7 +35,9 @@ export const signUpFlowMachine = setup({
   },
   states: {
     /**
-     * 例えば initial(初期表示) 状態のときに signUp(=SignUpEventで定義している`type`) イベントが発生した場合、registered 状態に遷移する
+     * 例えば initial(初期表示) 状態のときに
+     * signUp(=SignUpEventで定義している`type`) イベントが発生した場合、
+     * registered 状態に遷移する
      **/
     initial: {
       on: {

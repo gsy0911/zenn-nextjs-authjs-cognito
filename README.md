@@ -37,6 +37,7 @@ $ npm run dev
 ## articles
 
 
+- v6.0 @ [【NextAuth.js/認証】Cognitoのサインアップの状態遷移をXStateで楽に管理する](https://zenn.dev/gsy0911/articles/6589c490671ed3)
 - v5.0 @ null
 - v4.0 @ [【NextAuth.js】Next.jsのPages RouterをCloudFrontとAPI Gatewayで稼働させる](https://zenn.dev/gsy0911/articles/9bddce24f45a09)
 - v3.0 @ [【NextAuth.js/認可】S3バケットへのアクセスをIdTokenで制限する](https://zenn.dev/gsy0911/articles/bd26af3a69ee40)
